@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JohnShark - Random John Generator!</title>
+    <title>hard af photos</title>
     <style>
         body {
             font-family: sans-serif;
@@ -27,14 +27,14 @@
     </style>
 </head>
 <body>
-    <h1>Welcome to JohnShark.com!</h1>
-    <p>Here's your random John!</p>
-    <div id="shark-container">
+    <h1>Welcome to tuffest photo!</h1>
+    <p>Here's your random tuff</p>
+    <div id="hard-container">
     </div>
-    <p>Refresh for another John!</p>
+    <p>refresh for another epic image</p>
 
     <script>
-        const sharkImages = [
+        const hardImages = [
             "https://th-thumbnailer.cdn-si-edu.com/MYuDUFnFLjuqpb1oFe7tjNeIsN0=/1072x720/filters:no_upscale()/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/ae/98/ae980f74-fa29-4c42-9aff-eea13c2c1971/great_white_shark_south_africa.jpg",
             "https://www.georgiaaquarium.org/wp-content/uploads/2018/09/whale-shark-8-750x750.jpg",
             "https://img1.wsimg.com/isteam/ip/029b1b0a-04c1-41ac-8261-937f309eed6d/roxy%20with%20fishing%20gear.jpg/:/rs=w:1280",
@@ -48,13 +48,13 @@
 
 
 
-        const sharkContainer = document.getElementById("shark-container");
-        const randomIndex = Math.floor(Math.random() * sharkImages.length);
-        const randomSharkImage = sharkImages[randomIndex];
+        const hardContainer = document.getElementById("hard-container");
+        const randomIndex = Math.floor(Math.random() * hardImages.length);
+        const randomHardImage = hardImages[randomIndex];
 
         const img = document.createElement("img");
-        img.src = randomSharkImage;
-        sharkContainer.appendChild(img);
+        img.src = randomHardImage;
+        hardContainer.appendChild(img);
     </script>
 </body>
 </html>
