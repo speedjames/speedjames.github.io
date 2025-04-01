@@ -1,67 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JohnShark - Random John Generator!</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background-color: #e0f2f7;
-    }
-    h1 {
-      color: #00796b;
-      margin-top: 20px;
-    }
-    img {
-      max-width: 500px;
-      margin-top: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-    p {
-      margin-top: 20px;
-      color: grey;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JohnShark - Random John Generator!</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            background-color: #e0f2f7;
+        }
+        h1 {
+            color: #00796b;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 500px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        p {
+            margin-top:20px;
+            color: grey;
+        }
+    </style>
 </head>
 <body>
-  <h1>Welcome to JohnShark.com!</h1>
-  <p>Here's your random John!</p>
-  <div id="shark-container"></div>
-  <p>Refresh for another John!</p>
+    <h1>Welcome to JohnShark.com!</h1>
+    <p>Here's your random John!</p>
+    <div id="shark-container">
+    </div>
+    <p>Refresh for another John!</p>
 
-  <script>
-    // Change these values to match your GitHub username, repo, and branch name.
-    const githubUsername = 'speedjames';
-    const repoName = 'speedjames.github.io';
-    const branch = 'main';
+    <script>
+        const sharkImages = [
+            "https://th-thumbnailer.cdn-si-edu.com/MYuDUFnFLjuqpb1oFe7tjNeIsN0=/1072x720/filters:no_upscale()/https://tf-cmsv2-smithsonianmag-media.s3.amazonaws.com/filer/ae/98/ae980f74-fa29-4c42-9aff-eea13c2c1971/great_white_shark_south_africa.jpg",
+            "https://www.georgiaaquarium.org/wp-content/uploads/2018/09/whale-shark-8-750x750.jpg",
+            "https://img1.wsimg.com/isteam/ip/029b1b0a-04c1-41ac-8261-937f309eed6d/roxy%20with%20fishing%20gear.jpg/:/rs=w:1280",
+            "https://capemaywhalewatch.com/wp-content/uploads/sites/6160/2021/07/unnamed10.jpg?w=700&h=700&zoom=2",
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Tibur%C3%B3n_azul_%28Prionace_glauca%29%2C_canal_Fayal-Pico%2C_islas_Azores%2C_Portugal%2C_2020-07-27%2C_DD_28.jpg/500px-Tibur%C3%B3n_azul_%28Prionace_glauca%29%2C_canal_Fayal-Pico%2C_islas_Azores%2C_Portugal_2020-07-27%2C_DD_28.jpg",
+            "https://www.scubadiving.com/sites/default/files/styles/655_1x_/public/scuba/seawatch_mako_shark.jpg?itok=bHIlDaZO",
+            "https://c02.purpledshub.com/uploads/sites/47/2024/08/Thresher-shark.jpg",
+            "https://originaldiving.d3r.site/images/hero_xlarge/566065-gettyimages-534087391-lemon-shark-header.jpg"
+        ];
 
-    // URL to fetch the contents of the "hardImages" folder.
-    const apiUrl = `https://api.github.com/repos/${githubUsername}/${repoName}/contents/hardImages?ref=${branch}`;
 
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (!Array.isArray(data)) {
-          throw new Error("Unexpected response from GitHub API.");
-        }
-        // Choose a random file from the returned list.
-        const randomIndex = Math.floor(Math.random() * data.length);
-        const imageUrl = data[randomIndex].download_url;
 
-        // Create and display the image.
+        const sharkContainer = document.getElementById("shark-container");
+        const randomIndex = Math.floor(Math.random() * sharkImages.length);
+        const randomSharkImage = sharkImages[randomIndex];
+
         const img = document.createElement("img");
-        img.src = imageUrl;
-        document.getElementById("shark-container").appendChild(img);
-      })
-      .catch(error => {
-        console.error("Error fetching image list:", error);
-        const errorMsg = document.createElement("p");
-        errorMsg.textContent = "Unable to load image. Please try again later.";
-        document.getElementById("shark-container").appendChild(errorMsg);
-      });
-  </script>
+        img.src = randomSharkImage;
+        sharkContainer.appendChild(img);
+    </script>
 </body>
 </html>
