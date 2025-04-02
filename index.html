@@ -16,6 +16,8 @@
     }
     img {
       max-width: 500px;
+      height: 300px; /* Fixed height for all images */
+      object-fit: cover; /* Ensures the image covers the area while preserving aspect ratio */
       margin-top: 20px;
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -29,7 +31,7 @@
 <body>
   <h1>Welcome to the tuffest image >:-(</h1>
   <p>Here's your random tuff!</p>
-  <div id="tuff-container"></div>
+  <div id="shark-container"></div>
   <p>Refresh for another hard photo!</p>
 
   <script>
@@ -54,13 +56,13 @@
         // Create and display the image.
         const img = document.createElement("img");
         img.src = imageUrl;
-        document.getElementById("tuff-container").appendChild(img);
+        document.getElementById("shark-container").appendChild(img);
       })
       .catch(error => {
         console.error("Error fetching image list:", error);
         const errorMsg = document.createElement("p");
         errorMsg.textContent = "Unable to load image. Please try again later.";
-        document.getElementById("tuff-container").appendChild(errorMsg);
+        document.getElementById("shark-container").appendChild(errorMsg);
       });
   </script>
 </body>
