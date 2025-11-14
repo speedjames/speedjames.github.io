@@ -90,13 +90,13 @@
   #jumpscareOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.0);
+    background: rgba(0,0,0,0.0); /* keep transparent to allow PNG alpha */
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 2.2s ease;
+    transition: opacity 3s ease-out; /* default fade-out duration */
     z-index: 9999;
   }
 
@@ -104,6 +104,12 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
+    display: block;
+  }
+
+  /* Ensure overlay sits above the card on small viewports */
+  @media (max-width: 420px) {
+    #jumpscareOverlay img { width: 100vw; height: auto; }
   }
 </style>
 </head>
@@ -129,30 +135,33 @@
   </main>
 </div>
 
-<!-- Jumpscare Overlay -->
+<!-- Jumpscare Overlay (image src set when triggered to ensure it is loaded) -->
 <div id="jumpscareOverlay">
-  <img src="images/jumpscare.png" alt="jumpscare" />
+  <img id="jumpscareImg" alt="jumpscare" />
 </div>
 
 <script>
 (() => {
   const imagesFolder = 'images/';
   const manifestPath = imagesFolder + 'images.json';
+  const jumpscareFilename = 'jumpscare.png'; // file to use for jumpscare (put it in images/)
 
   const currentImage = document.getElementById('currentImage');
   const fallback = document.getElementById('fallback');
   const imageInfo = document.getElementById('imageInfo');
   const newBtn = document.getElementById('newBtn');
+  const overlay = document.getElementById('jumpscareOverlay');
+  const jumpscareImg = document.getElementById('jumpscareImg');
 
   let imageList = [];
   let lastIndex = -1;
-  let jumpscareTriggered = false;
+  let jumpscareTriggered = false; // only trigger once (change if you want repeated triggers)
 
   function preload(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(src);
-      img.onerror = () => reject();
+      img.onerror = () => reject(new Error('failed to load ' + src));
       img.src = src;
     });
   }
@@ -175,7 +184,7 @@
     if (imageList.length === 1) return 0;
     let i;
     do { i = Math.floor(Math.random() * imageList.length); }
-    while(i === lastIndex);
+    while(i === lastIndex && imageList.length > 1);
     lastIndex = i;
     return i;
   }
@@ -183,33 +192,55 @@
   async function showRandom() {
     if (!imageList.length) return;
     const src = imageList[randomIndex()];
-    try { await preload(src); } catch {}
+    try { await preload(src); } catch (e) { /* ignore preload errors */ }
     showImage(src);
   }
 
+  // Trigger the jumpscare 2 seconds after the first click.
+  // Ensure the jumpscare image is loaded before showing so transparent PNGs render instantly.
   function triggerJumpscareOnce() {
     if (jumpscareTriggered) return;
     jumpscareTriggered = true;
 
     setTimeout(() => {
-      const overlay = document.getElementById('jumpscareOverlay');
-      overlay.style.opacity = '1';
+      const src = imagesFolder + jumpscareFilename;
 
-      setTimeout(() => {
-        overlay.style.opacity = '0';
-      }, 100);
+      // Load the jumpscare image first
+      const pre = new Image();
+      let shown = false;
+      pre.onload = () => {
+        // set the overlay img src (in case it's different), then show
+        jumpscareImg.src = src;
+        // make sure transition will run for fade-out
+        overlay.style.transition = 'opacity 3s ease-out';
+        // show instantly
+        overlay.style.opacity = '1';
+        shown = true;
+        // then slowly fade out
+        setTimeout(() => { overlay.style.opacity = '0'; }, 50);
+      };
+      pre.onerror = () => {
+        // If jumpscare image failed to load, don't do anything noisy — silently abort.
+        console.warn('Jumpscare image failed to load:', src);
+        if (!shown) {
+          // Optionally you could still flash a simple overlay color; keeping silent is safer.
+        }
+      };
+      // start loading
+      pre.src = src;
     }, 2000);
   }
 
   async function loadManifest() {
     try {
-      const r = await fetch(manifestPath);
-      if (!r.ok) throw 0;
+      const r = await fetch(manifestPath, {cache: 'no-store'});
+      if (!r.ok) throw new Error('manifest fetch failed');
       const json = await r.json();
+      if (!Array.isArray(json)) throw new Error('manifest must be an array');
       imageList = json.map(f => imagesFolder + f);
       imageInfo.textContent = `${imageList.length} image(s) available`;
       return true;
-    } catch {
+    } catch (err) {
       imageInfo.textContent = 'Manifest not found';
       return false;
     }
@@ -225,8 +256,10 @@
   }
 
   newBtn.addEventListener('click', () => {
-    triggerJumpscareOnce();
+    // show a new gallery image immediately
     showRandom();
+    // schedule jumpscare to run 2s after the first click
+    triggerJumpscareOnce();
   });
 
   currentImage.addEventListener('click', showRandom);
