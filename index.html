@@ -1,212 +1,207 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Casio fx-991CW</title>
-  <style>
-    :root {
-      --bg-dark: #202123;
-      --chat-bg: #343541;
-      --user-msg: #0d6efd;
-      --assistant-msg: #444654;
-      --text-light: #ececf1;
-      font-family: 'Inter', system-ui, sans-serif;
-    }
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: var(--bg-dark);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .container {
-      position: relative;
-      width: 400px;
-      height: 600px;
-      overflow: hidden;
-      border-radius: 16px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-      background: var(--chat-bg);
-      display: flex;
-      transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
-    }
-    .calculator, .chatgpt {
-      flex-shrink: 0;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
-    }
-    .calculator {
-      background: #0f172a;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      color: white;
-      box-sizing: border-box;
-    }
-    .display {
-      background: rgba(255,255,255,0.1);
-      border-radius: 12px;
-      padding: 20px;
-      font-size: 2rem;
-      text-align: right;
-      margin-bottom: 16px;
-    }
-    .pad {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      flex: 1;
-    }
-    .btn {
-      background: #1e293b;
-      border: none;
-      border-radius: 12px;
-      padding: 16px;
-      color: #e2e8f0;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn:hover { background: #334155; }
-    .btn.operator { background: #6366f1; color: white; }
-    .btn.operator:hover { background: #4f46e5; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Tuffest Image</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<style>
+  :root{
+    --bg1: #0f1724;
+    --bg2: #0b1220;
+    --card: rgba(255,255,255,0.03);
+    --muted: rgba(255,255,255,0.65);
+    --accent: linear-gradient(90deg,#7c5cff,#4ca3ff);
+    --radius: 18px;
+    --glass: rgba(255,255,255,0.03);
+  }
 
-    .chatgpt {
-      background: var(--chat-bg);
-      color: var(--text-light);
-      display: flex;
-      flex-direction: column;
-      box-sizing: border-box;
-    }
-    .chat-header {
-      padding: 12px 16px;
-      font-weight: bold;
-      background: #2b2c2f;
-      border-bottom: 1px solid #3f3f46;
-    }
-    .chat-body {
-      flex: 1;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow-y: auto;
-    }
-    .message {
-      max-width: 85%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      line-height: 1.4;
-    }
-    .user-msg {
-      background: var(--user-msg);
-      color: white;
-      align-self: flex-end;
-    }
-    .assistant-msg {
-      background: var(--assistant-msg);
-      align-self: flex-start;
-    }
-    .typing {
-      display: flex;
-      gap: 4px;
-      align-items: center;
-    }
-    .dot {
-      width: 6px;
-      height: 6px;
-      background: #c4c4c4;
-      border-radius: 50%;
-      animation: blink 1.4s infinite both;
-    }
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes blink {
-      0%, 80%, 100% { opacity: 0; }
-      40% { opacity: 1; }
-    }
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 800px at 10% 10%, rgba(76,163,255,0.06), transparent 8%),
+                radial-gradient(800px 600px at 90% 90%, rgba(124,92,255,0.04), transparent 8%),
+                linear-gradient(180deg,var(--bg1),var(--bg2));
+    color: #eef2ff;
+  }
 
-    .show-chat .calculator { transform: translateX(-100%); }
-    .show-chat .chatgpt { transform: translateX(-100%); }
-  </style>
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:48px 20px;
+    box-sizing:border-box;
+  }
+
+  .card{
+    width:clamp(320px, 70vw, 980px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    gap:18px;
+  }
+
+  .image-wrap{
+    position:relative;
+    min-height:360px;
+    height: clamp(320px, 56vh, 720px);
+    border-radius:12px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  img.display {
+    max-width:100%;
+    max-height:100%;
+    transition: opacity 600ms cubic-bezier(.2,.9,.25,1), transform 650ms cubic-bezier(.2,.9,.25,1);
+    opacity:0;
+    transform: translateY(10px) scale(1.01);
+    object-fit:contain;
+  }
+  img.display.visible{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+
+  .controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .btn{
+    background: linear-gradient(90deg, rgba(124,92,255,0.18), rgba(76,163,255,0.12));
+    border:0;
+    padding:10px 14px;
+    border-radius:10px;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+  }
+</style>
 </head>
 <body>
-  <div class="container" id="container">
-    <div class="calculator">
-      <div class="display" id="display">0</div>
-      <div class="pad">
-        <button class="btn" data-val="7">7</button>
-        <button class="btn" data-val="8">8</button>
-        <button class="btn" data-val="9">9</button>
-        <button class="btn operator" data-val="/">÷</button>
-        <button class="btn" data-val="4">4</button>
-        <button class="btn" data-val="5">5</button>
-        <button class="btn" data-val="6">6</button>
-        <button class="btn operator" data-val="*">×</button>
-        <button class="btn" data-val="1">1</button>
-        <button class="btn" data-val="2">2</button>
-        <button class="btn" data-val="3">3</button>
-        <button class="btn operator" data-val="-">−</button>
-        <button class="btn" data-val="0">0</button>
-        <button class="btn" data-val=".">.</button>
-        <button class="btn operator" data-val="+">+</button>
-        <button class="btn operator" id="equals">=</button>
+<div class="wrap">
+  <main class="card">
+    <header style="display:flex;align-items:center;gap:14px;">
+      <div class="brand">
+        <div class="title">the tuffest image</div>
+        <div class="subtitle" style="color:var(--muted);font-size:0.85rem;">Minimal gallery. Click to reveal a new image.</div>
       </div>
+    </header>
+
+    <div class="image-wrap">
+      <img id="currentImage" class="display" alt="Displayed image" />
+      <div id="fallback" style="position:absolute;color:var(--muted);">Loading…</div>
     </div>
 
-    <div class="chatgpt">
-      <div class="chat-header">ChatGPT</div>
-      <div class="chat-body" id="chatBody"></div>
+    <div class="controls">
+      <div id="imageInfo" style="color:var(--muted);font-size:0.9rem;">Waiting for images…</div>
+      <button id="newBtn" class="btn">New Image</button>
     </div>
-  </div>
+  </main>
+</div>
 
-  <script>
-    const display = document.getElementById('display');
-    const container = document.getElementById('container');
-    const chatBody = document.getElementById('chatBody');
+<script>
+(() => {
+  const imagesFolder = 'images/';
+  const manifestPath = imagesFolder + 'images.json';
 
-    let expr = '';
+  const currentImage = document.getElementById('currentImage');
+  const fallback = document.getElementById('fallback');
+  const imageInfo = document.getElementById('imageInfo');
+  const newBtn = document.getElementById('newBtn');
 
-    document.querySelectorAll('.btn[data-val]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        expr += btn.dataset.val;
-        display.textContent = expr;
-      });
+  let imageList = [];
+  let lastIndex = -1;
+
+  function preload(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(src);
+      img.onerror = () => reject();
+      img.src = src;
     });
+  }
 
-    document.getElementById('equals').addEventListener('click', () => {
-      if (!expr) return;
-      container.classList.add('show-chat');
-      showChat(expr);
-    });
+  function showImage(src){
+    fallback.style.display = 'none';
+    currentImage.classList.remove('visible');
+    setTimeout(() => {
+      currentImage.src = src;
+      currentImage.alt = src.split('/').pop();
+      currentImage.onload = () => {
+        currentImage.classList.add('visible');
+        imageInfo.textContent = currentImage.alt;
+      };
+    }, 40);
+  }
 
-    function showChat(question) {
-      chatBody.innerHTML = '';
+  function randomIndex() {
+    if (!imageList.length) return -1;
+    if (imageList.length === 1) return 0;
+    let i;
+    do { i = Math.floor(Math.random() * imageList.length); }
+    while(i === lastIndex);
+    lastIndex = i;
+    return i;
+  }
 
-      const userMsg = document.createElement('div');
-      userMsg.className = 'message user-msg';
-      userMsg.textContent = question;
-      chatBody.appendChild(userMsg);
+  async function showRandom() {
+    if (!imageList.length) return;
+    const src = imageList[randomIndex()];
+    try { await preload(src); } catch {}
+    showImage(src);
+  }
 
-      const typing = document.createElement('div');
-      typing.className = 'message assistant-msg typing';
-      typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-      chatBody.appendChild(typing);
-      chatBody.scrollTop = chatBody.scrollHeight;
-
-      setTimeout(() => {
-        typing.remove();
-        const reply = document.createElement('div');
-        reply.className = 'message assistant-msg';
-        reply.textContent = 'idk bru ask chagpt 🤷‍♂️';
-        chatBody.appendChild(reply);
-        chatBody.scrollTop = chatBody.scrollHeight;
-      }, 1500);
+  async function loadManifest() {
+    try {
+      const r = await fetch(manifestPath);
+      if (!r.ok) throw 0;
+      const data = await r.json();
+      imageList = data.map(f => imagesFolder + f);
+      imageInfo.textContent = `${imageList.length} image(s) available`;
+      return true;
+    } catch {
+      return false;
     }
-  </script>
+  }
+
+  async function probeFiles(max = 20) {
+    const exts = ['jpg','jpeg','png','webp'];
+    const found = [];
+    for (let i = 1; i <= max; i++) {
+      for (const ext of exts) {
+        const candidate = `${imagesFolder}${i}.${ext}`;
+        const ok = await preload(candidate).then(()=>true).catch(()=>false);
+        if (ok) found.push(candidate);
+      }
+    }
+    imageList = found;
+    if (found.length) imageInfo.textContent = `${found.length} image(s) found`;
+  }
+
+  async function init() {
+    if (!await loadManifest()) await probeFiles();
+    if (!imageList.length) {
+      fallback.textContent = 'No images found';
+      return;
+    }
+    await showRandom();
+  }
+
+  newBtn.addEventListener('click', showRandom);
+  currentImage.addEventListener('click', showRandom);
+
+  init();
+})();
+</script>
 </body>
 </html>
