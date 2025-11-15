@@ -90,26 +90,19 @@
   #jumpscareOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.0); /* keep transparent to allow PNG alpha */
     display: flex;
     align-items: center;
     justify-content: center;
     pointer-events: none;
     opacity: 0;
-    transition: opacity 3s ease-out; /* default fade-out duration */
     z-index: 9999;
+    transition: opacity 3s ease-out;
   }
 
   #jumpscareOverlay img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    display: block;
-  }
-
-  /* Ensure overlay sits above the card on small viewports */
-  @media (max-width: 420px) {
-    #jumpscareOverlay img { width: 100vw; height: auto; }
   }
 </style>
 </head>
@@ -135,7 +128,6 @@
   </main>
 </div>
 
-<!-- Jumpscare Overlay (image src set when triggered to ensure it is loaded) -->
 <div id="jumpscareOverlay">
   <img id="jumpscareImg" alt="jumpscare" />
 </div>
@@ -144,7 +136,7 @@
 (() => {
   const imagesFolder = 'images/';
   const manifestPath = imagesFolder + 'images.json';
-  const jumpscareFilename = 'jumpscare.png'; // file to use for jumpscare (put it in images/)
+  const jumpscareFilename = 'jumpscare.png';
 
   const currentImage = document.getElementById('currentImage');
   const fallback = document.getElementById('fallback');
@@ -155,13 +147,13 @@
 
   let imageList = [];
   let lastIndex = -1;
-  let jumpscareTriggered = false; // only trigger once (change if you want repeated triggers)
+  let jumpscareTriggered = false;
 
   function preload(src) {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(src);
-      img.onerror = () => reject(new Error('failed to load ' + src));
+      img.onerror = () => reject();
       img.src = src;
     });
   }
@@ -192,76 +184,44 @@
   async function showRandom() {
     if (!imageList.length) return;
     const src = imageList[randomIndex()];
-    try { await preload(src); } catch (e) { /* ignore preload errors */ }
+    try { await preload(src); } catch {};
     showImage(src);
   }
 
-  // Trigger the jumpscare 2 seconds after the first click.
-  // Ensure the jumpscare image is loaded before showing so transparent PNGs render instantly.
   function triggerJumpscareOnce() {
     if (jumpscareTriggered) return;
     jumpscareTriggered = true;
-
     setTimeout(() => {
-      const src = imagesFolder + jumpscareFilename;
-
-      // Load the jumpscare image first
-      const pre = new Image();
-      let shown = false;
-      pre.onload = () => {
-        // set the overlay img src (in case it's different), then show
-        jumpscareImg.src = src;
-        // make sure transition will run for fade-out
+      jumpscareImg.src = imagesFolder + jumpscareFilename;
+      overlay.style.transition = 'none';
+      overlay.style.opacity = '1';
+      void overlay.offsetWidth;
+      setTimeout(()=>{
         overlay.style.transition = 'opacity 3s ease-out';
-        // show instantly
-        overlay.style.opacity = '1';
-        shown = true;
-        // then slowly fade out
-        setTimeout(() => { overlay.style.opacity = '0'; }, 50);
-      };
-      pre.onerror = () => {
-        // If jumpscare image failed to load, don't do anything noisy — silently abort.
-        console.warn('Jumpscare image failed to load:', src);
-        if (!shown) {
-          // Optionally you could still flash a simple overlay color; keeping silent is safer.
-        }
-      };
-      // start loading
-      pre.src = src;
+        overlay.style.opacity = '0';
+      }, 2000);
     }, 2000);
   }
 
   async function loadManifest() {
     try {
-      const r = await fetch(manifestPath, {cache: 'no-store'});
-      if (!r.ok) throw new Error('manifest fetch failed');
+      const r = await fetch(manifestPath, {cache:'no-store'});
+      if (!r.ok) throw new Error();
       const json = await r.json();
-      if (!Array.isArray(json)) throw new Error('manifest must be an array');
       imageList = json.map(f => imagesFolder + f);
       imageInfo.textContent = `${imageList.length} image(s) available`;
-      return true;
-    } catch (err) {
+    } catch {
       imageInfo.textContent = 'Manifest not found';
-      return false;
     }
   }
 
   async function init() {
     await loadManifest();
-    if (!imageList.length) {
-      fallback.textContent = 'No images found';
-      return;
-    }
+    if (!imageList.length) fallback.textContent = 'No images found';
     await showRandom();
   }
 
-  newBtn.addEventListener('click', () => {
-    // show a new gallery image immediately
-    showRandom();
-    // schedule jumpscare to run 2s after the first click
-    triggerJumpscareOnce();
-  });
-
+  newBtn.addEventListener('click', () => { showRandom(); triggerJumpscareOnce(); });
   currentImage.addEventListener('click', showRandom);
 
   init();
