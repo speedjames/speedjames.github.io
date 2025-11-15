@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Casio fx-991CW</title>
+  <style>
+    :root {
+      --bg-dark: #202123;
+      --chat-bg: #343541;
+      --user-msg: #0d6efd;
+      --assistant-msg: #444654;
+      --text-light: #ececf1;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg-dark);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      position: relative;
+      width: 400px;
+      height: 600px;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      background: var(--chat-bg);
+      display: flex;
+      transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
+    }
+    .calculator, .chatgpt {
+      flex-shrink: 0;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s cubic-bezier(0.77,0,0.175,1);
+    }
+    .calculator {
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      color: white;
+      box-sizing: border-box;
+    }
+    .display {
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 2rem;
+      text-align: right;
+      margin-bottom: 16px;
+    }
+    .pad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      flex: 1;
+    }
+    .btn {
+      background: #1e293b;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      color: #e2e8f0;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn:hover { background: #334155; }
+    .btn.operator { background: #6366f1; color: white; }
+    .btn.operator:hover { background: #4f46e5; }
+
+    .chatgpt {
+      background: var(--chat-bg);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    .chat-header {
+      padding: 12px 16px;
+      font-weight: bold;
+      background: #2b2c2f;
+      border-bottom: 1px solid #3f3f46;
+    }
+    .chat-body {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+    .message {
+      max-width: 85%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      line-height: 1.4;
+    }
+    .user-msg {
+      background: var(--user-msg);
+      color: white;
+      align-self: flex-end;
+    }
+    .assistant-msg {
+      background: var(--assistant-msg);
+      align-self: flex-start;
+    }
+    .typing {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: #c4c4c4;
+      border-radius: 50%;
+      animation: blink 1.4s infinite both;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0; }
+      40% { opacity: 1; }
+    }
+
+    .show-chat .calculator { transform: translateX(-100%); }
+    .show-chat .chatgpt { transform: translateX(-100%); }
+  </style>
+</head>
+<body>
+  <div class="container" id="container">
+    <div class="calculator">
+      <div class="display" id="display">0</div>
+      <div class="pad">
+        <button class="btn" data-val="7">7</button>
+        <button class="btn" data-val="8">8</button>
+        <button class="btn" data-val="9">9</button>
+        <button class="btn operator" data-val="/">÷</button>
+        <button class="btn" data-val="4">4</button>
+        <button class="btn" data-val="5">5</button>
+        <button class="btn" data-val="6">6</button>
+        <button class="btn operator" data-val="*">×</button>
+        <button class="btn" data-val="1">1</button>
+        <button class="btn" data-val="2">2</button>
+        <button class="btn" data-val="3">3</button>
+        <button class="btn operator" data-val="-">−</button>
+        <button class="btn" data-val="0">0</button>
+        <button class="btn" data-val=".">.</button>
+        <button class="btn operator" data-val="+">+</button>
+        <button class="btn operator" id="equals">=</button>
+      </div>
+    </div>
+
+    <div class="chatgpt">
+      <div class="chat-header">ChatGPT</div>
+      <div class="chat-body" id="chatBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const container = document.getElementById('container');
+    const chatBody = document.getElementById('chatBody');
+
+    let expr = '';
+
+    document.querySelectorAll('.btn[data-val]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        expr += btn.dataset.val;
+        display.textContent = expr;
+      });
+    });
+
+    document.getElementById('equals').addEventListener('click', () => {
+      if (!expr) return;
+      container.classList.add('show-chat');
+      showChat(expr);
+    });
+
+    function showChat(question) {
+      chatBody.innerHTML = '';
+
+      const userMsg = document.createElement('div');
+      userMsg.className = 'message user-msg';
+      userMsg.textContent = question;
+      chatBody.appendChild(userMsg);
+
+      const typing = document.createElement('div');
+      typing.className = 'message assistant-msg typing';
+      typing.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+      chatBody.appendChild(typing);
+      chatBody.scrollTop = chatBody.scrollHeight;
+
+      setTimeout(() => {
+        typing.remove();
+        const reply = document.createElement('div');
+        reply.className = 'message assistant-msg';
+        reply.textContent = 'idk bru ask chagpt 🤷‍♂️';
+        chatBody.appendChild(reply);
+        chatBody.scrollTop = chatBody.scrollHeight;
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

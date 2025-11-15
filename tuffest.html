@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Tuffest Image</title>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<style>
+  :root{
+    --bg1: #0f1724;
+    --bg2: #0b1220;
+    --card: rgba(255,255,255,0.03);
+    --muted: rgba(255,255,255,0.65);
+    --accent: linear-gradient(90deg,#7c5cff,#4ca3ff);
+    --radius: 18px;
+    --glass: rgba(255,255,255,0.03);
+  }
+
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background: radial-gradient(1200px 800px at 10% 10%, rgba(76,163,255,0.06), transparent 8%),
+                radial-gradient(800px 600px at 90% 90%, rgba(124,92,255,0.04), transparent 8%),
+                linear-gradient(180deg,var(--bg1),var(--bg2));
+    color: #eef2ff;
+  }
+
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:48px 20px;
+    box-sizing:border-box;
+  }
+
+  .card{
+    width:clamp(320px, 70vw, 980px);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+    display:grid;
+    grid-template-rows:auto 1fr auto;
+    gap:18px;
+  }
+
+  .image-wrap{
+    position:relative;
+    min-height:360px;
+    height: clamp(320px, 56vh, 720px);
+    border-radius:12px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  img.display {
+    max-width:100%;
+    max-height:100%;
+    transition: opacity 600ms cubic-bezier(.2,.9,.25,1), transform 650ms cubic-bezier(.2,.9,.25,1);
+    opacity:0;
+    transform: translateY(10px) scale(1.01);
+    object-fit:contain;
+  }
+  img.display.visible{
+    opacity:1;
+    transform: translateY(0) scale(1);
+  }
+
+  .controls{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .btn{
+    background: linear-gradient(90deg, rgba(124,92,255,0.18), rgba(76,163,255,0.12));
+    border:0;
+    padding:10px 14px;
+    border-radius:10px;
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+  }
+
+  /* Jumpscare overlay */
+  #jumpscareOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 3s ease-out;
+  }
+
+  #jumpscareOverlay img {
+    -webkit-animation: lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    will-change: transform;
+    transform-origin: center center;
+  }
+
+  @media (max-width: 768px) {
+    #jumpscareOverlay img {
+      max-width: 110vw;
+      max-height: 110vh;
+      animation: lunge-mobile 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+  }
+
+  @keyframes shake {
+    0% { transform: translate(0,0) rotate(0deg); }
+    25% { transform: translate(3px,-2px) rotate(1deg); }
+    50% { transform: translate(-3px,2px) rotate(-1deg); }
+    75% { transform: translate(2px,3px) rotate(1deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+
+  @keyframes lunge {
+    0% { transform: scale(0.1) translate(0,0) rotate(0deg); }
+    25% { transform: scale(0.1) translate(3px,-2px) rotate(1deg); }
+    50% { transform: scale(0.55) translate(-3px,2px) rotate(-1deg); }
+    75% { transform: scale(0.8) translate(2px,3px) rotate(1deg); }
+    100% { transform: scale(1.2) translate(0,0) rotate(0deg); }
+  }
+
+  @-webkit-keyframes lunge {
+    0% { -webkit-transform: scale(0.1) translate(0,0) rotate(0deg); transform: scale(0.1) translate(0,0) rotate(0deg); }
+    25% { -webkit-transform: scale(0.1) translate(3px,-2px) rotate(1deg); transform: scale(0.1) translate(3px,-2px) rotate(1deg); }
+    50% { -webkit-transform: scale(0.55) translate(-3px,2px) rotate(-1deg); transform: scale(0.55) translate(-3px,2px) rotate(-1deg); }
+    75% { -webkit-transform: scale(0.8) translate(2px,3px) rotate(1deg); transform: scale(0.8) translate(2px,3px) rotate(1deg); }
+    100% { -webkit-transform: scale(1.2) translate(0,0) rotate(0deg); transform: scale(1.2) translate(0,0) rotate(0deg); }
+  }
+
+  @keyframes lunge-mobile {
+    0% { transform: scale(0.08) translate(0,0) rotate(0deg); }
+    25% { transform: scale(0.08) translate(3px,-2px) rotate(1deg); }
+    50% { transform: scale(0.5) translate(-3px,2px) rotate(-1deg); }
+    75% { transform: scale(0.75) translate(2px,3px) rotate(1deg); }
+    100% { transform: scale(1.3) translate(0,0) rotate(0deg); }
+  }
+  @-webkit-keyframes lunge-mobile {
+    0% { -webkit-transform: scale(0.08) translate(0,0) rotate(0deg); transform: scale(0.08) translate(0,0) rotate(0deg); }
+    25% { -webkit-transform: scale(0.08) translate(3px,-2px) rotate(1deg); transform: scale(0.08) translate(3px,-2px) rotate(1deg); }
+    50% { -webkit-transform: scale(0.5) translate(-3px,2px) rotate(-1deg); transform: scale(0.5) translate(-3px,2px) rotate(-1deg); }
+    75% { -webkit-transform: scale(0.75) translate(2px,3px) rotate(1deg); transform: scale(0.75) translate(2px,3px) rotate(1deg); }
+    100% { -webkit-transform: scale(1.3) translate(0,0) rotate(0deg); transform: scale(1.3) translate(0,0) rotate(0deg); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <main class="card">
+    <header style="display:flex;align-items:center;gap:14px;">
+      <div class="brand">
+        <div class="title">the tuffest image</div>
+        <div class="subtitle" style="color:var(--muted);font-size:0.85rem;">Only hard images here</div>
+      </div>
+    </header>
+
+    <div class="image-wrap">
+      <img id="currentImage" class="display" alt="Displayed image" />
+      <div id="fallback" style="position:absolute;color:var(--muted);">Loading…</div>
+    </div>
+
+    <div class="controls">
+      <div id="imageInfo" style="color:var(--muted);font-size:0.9rem;">Waiting for images…</div>
+      <button id="newBtn" class="btn">New Image</button>
+    </div>
+  </main>
+</div>
+
+<div id="jumpscareOverlay">
+  <img id="jumpscareImg" alt="jumpscare" />
+</div>
+
+<script>
+(() => {
+  const imagesFolder = 'images/';
+  const manifestPath = imagesFolder + 'images.json';
+  const jumpscareFilename = 'jumpscare.png';
+
+  const currentImage = document.getElementById('currentImage');
+  const fallback = document.getElementById('fallback');
+  const imageInfo = document.getElementById('imageInfo');
+  const newBtn = document.getElementById('newBtn');
+  const overlay = document.getElementById('jumpscareOverlay');
+  const jumpscareImg = document.getElementById('jumpscareImg');
+
+  let imageList = [];
+  let lastIndex = -1;
+  let jumpscareTriggered = false;
+  let jumpscareAudio = null;
+  let isJumpscareLoading = false;
+
+  function preload(src) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(src);
+      img.onerror = () => reject();
+      img.src = src;
+    });
+  }
+
+  function showImage(src){
+    fallback.style.display = 'none';
+    currentImage.classList.remove('visible');
+    setTimeout(() => {
+      currentImage.src = src;
+      currentImage.alt = src.split('/').pop();
+      currentImage.onload = () => {
+        currentImage.classList.add('visible');
+        imageInfo.textContent = currentImage.alt;
+      };
+    }, 40);
+  }
+
+  function randomIndex() {
+    if (!imageList.length) return -1;
+    if (imageList.length === 1) return 0;
+    let i;
+    do { i = Math.floor(Math.random() * imageList.length); }
+    while(i === lastIndex && imageList.length > 1);
+    lastIndex = i;
+    return i;
+  }
+
+  async function showRandom() {
+    if (!imageList.length) return;
+    const src = imageList[randomIndex()];
+    try { await preload(src); } catch {};
+    showImage(src);
+  }
+
+  function triggerJumpscareOnce() {
+    if (jumpscareTriggered) return;
+    jumpscareTriggered = true;
+    
+    setTimeout(() => {
+      jumpscareImg.src = imagesFolder + jumpscareFilename;
+      overlay.style.transition = 'none';
+      overlay.style.opacity = '1';
+      
+      // Reset animation by removing and re-adding it
+      jumpscareImg.style.animation = 'none';
+      void jumpscareImg.offsetWidth;
+      jumpscareImg.style.animation = 'lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      
+      // Play jumpscare audio
+      if (jumpscareAudio) {
+        jumpscareAudio.currentTime = 0;
+        jumpscareAudio.play().catch(e => console.log('Audio playback failed:', e));
+      }
+      
+      void overlay.offsetWidth;
+      setTimeout(()=>{
+        overlay.style.transition = 'opacity 3s ease-out';
+        overlay.style.opacity = '0';
+      }, 2000);
+    }, 2000);
+  }
+
+  async function loadManifest() {
+    try {
+      const r = await fetch(manifestPath, {cache:'no-store'});
+      if (!r.ok) throw new Error();
+      const json = await r.json();
+      imageList = json.map(f => imagesFolder + f);
+      imageInfo.textContent = `${imageList.length} image(s) available`;
+    } catch {
+      imageInfo.textContent = 'Manifest not found';
+    }
+  }
+
+  async function init() {
+    // Start with loading state
+    newBtn.textContent = 'Loading…';
+    newBtn.disabled = true;
+    
+    // Preload jumpscare audio
+    jumpscareAudio = new Audio(imagesFolder + 'jumpscare.mp3');
+    jumpscareAudio.preload = 'auto';
+    
+    // Preload jumpscare image
+    const jumpscarePreload = new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = imagesFolder + jumpscareFilename;
+    });
+    
+    // Helper to detect iOS (Safari) where audio won't canplay until a user gesture
+    function isIOS() {
+      return /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+    }
+
+    // Wait for audio (unless iOS), image preload, and manifest
+    const audioReadyPromise = new Promise(resolve => {
+      if (!jumpscareAudio || !jumpscareAudio.src) return resolve();
+      if (isIOS()) {
+        console.log('iOS detected: skipping audio canplay wait');
+        // iOS won't allow canplay without user gesture — resolve now and rely on unlock on user click
+        return resolve();
+      }
+      jumpscareAudio.addEventListener('canplay', () => { console.log('jumpscare audio canplay'); resolve(); }, { once: true });
+      jumpscareAudio.addEventListener('error', () => { console.log('jumpscare audio error'); resolve(); }, { once: true });
+    });
+
+    await Promise.all([
+      audioReadyPromise,
+      jumpscarePreload,
+      loadManifest()
+    ]);
+    
+    if (!imageList.length) fallback.textContent = 'No images found';
+    await showRandom();
+    
+    // Everything loaded, enable button
+    newBtn.textContent = 'New Image';
+    newBtn.disabled = false;
+  }
+
+  // iOS requires play() to be called during a user gesture. Unlock playback
+  // by attempting a muted play on first user interaction.
+  let jumpscareUnlocked = false;
+
+  async function unlockAudio() {
+    if (jumpscareUnlocked) return;
+    if (!jumpscareAudio) { jumpscareUnlocked = true; return; }
+    try {
+      jumpscareAudio.muted = true;
+      const p = jumpscareAudio.play();
+      if (p && p.then) {
+        await p;
+      }
+      jumpscareAudio.pause();
+    } catch (e) {
+      console.log('unlockAudio play error', e);
+    } finally {
+      jumpscareAudio.muted = false;
+      jumpscareUnlocked = true;
+      console.log('jumpscare audio unlocked');
+    }
+  }
+
+  newBtn.addEventListener('click', async () => {
+    await unlockAudio();
+    showRandom();
+    triggerJumpscareOnce();
+  });
+
+  currentImage.addEventListener('click', showRandom);
+
+  init();
+})();
+</script>
+</body>
+</html>
