@@ -226,10 +226,6 @@
   function triggerJumpscareOnce() {
     if (jumpscareTriggered) return;
     jumpscareTriggered = true;
-    isJumpscareLoading = true;
-    newBtn.disabled = true;
-    newBtn.textContent = 'Loading…';
-    currentImage.style.pointerEvents = 'none';
     
     setTimeout(() => {
       jumpscareImg.src = imagesFolder + jumpscareFilename;
@@ -251,10 +247,6 @@
       setTimeout(()=>{
         overlay.style.transition = 'opacity 3s ease-out';
         overlay.style.opacity = '0';
-        isJumpscareLoading = false;
-        newBtn.disabled = false;
-        newBtn.textContent = 'New Image';
-        currentImage.style.pointerEvents = 'auto';
       }, 2000);
     }, 2000);
   }
@@ -272,17 +264,46 @@
   }
 
   async function init() {
+    // Start with loading state
+    newBtn.textContent = 'Loading…';
+    newBtn.disabled = true;
+    
     // Preload jumpscare audio
     jumpscareAudio = new Audio(imagesFolder + 'jumpscare.mp3');
     jumpscareAudio.preload = 'auto';
     
-    await loadManifest();
+    // Preload jumpscare image
+    const jumpscarePreload = new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve();
+      img.onerror = () => resolve();
+      img.src = imagesFolder + jumpscareFilename;
+    });
+    
+    // Wait for audio and image to be ready
+    await Promise.all([
+      new Promise(resolve => {
+        if (jumpscareAudio.src) {
+          jumpscareAudio.addEventListener('canplay', resolve, { once: true });
+          jumpscareAudio.addEventListener('error', resolve, { once: true });
+        } else {
+          resolve();
+        }
+      }),
+      jumpscarePreload,
+      loadManifest()
+    ]);
+    
     if (!imageList.length) fallback.textContent = 'No images found';
     await showRandom();
+    
+    // Everything loaded, enable button
+    newBtn.textContent = 'New Image';
+    newBtn.disabled = false;
   }
 
-  newBtn.addEventListener('click', () => { if (!isJumpscareLoading) { showRandom(); triggerJumpscareOnce(); } });
-  currentImage.addEventListener('click', () => { if (!isJumpscareLoading) showRandom(); });
+  newBtn.addEventListener('click', () => { showRandom(); triggerJumpscareOnce(); });
+  currentImage.addEventListener('click', showRandom);
 
   init();
 })();
