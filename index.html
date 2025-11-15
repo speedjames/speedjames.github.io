@@ -165,6 +165,7 @@
   let imageList = [];
   let lastIndex = -1;
   let jumpscareTriggered = false;
+  let jumpscareAudio = null;
 
   function preload(src) {
     return new Promise((resolve, reject) => {
@@ -213,9 +214,16 @@
       overlay.style.transition = 'none';
       overlay.style.opacity = '1';
       
+      // Reset animation by removing and re-adding it
+      jumpscareImg.style.animation = 'none';
+      void jumpscareImg.offsetWidth;
+      jumpscareImg.style.animation = 'lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      
       // Play jumpscare audio
-      const audio = new Audio(imagesFolder + 'jumpscare.mp3');
-      audio.play().catch(e => console.log('Audio playback failed:', e));
+      if (jumpscareAudio) {
+        jumpscareAudio.currentTime = 0;
+        jumpscareAudio.play().catch(e => console.log('Audio playback failed:', e));
+      }
       
       void overlay.offsetWidth;
       setTimeout(()=>{
@@ -238,6 +246,10 @@
   }
 
   async function init() {
+    // Preload jumpscare audio
+    jumpscareAudio = new Audio(imagesFolder + 'jumpscare.mp3');
+    jumpscareAudio.preload = 'auto';
+    
     await loadManifest();
     if (!imageList.length) fallback.textContent = 'No images found';
     await showRandom();
