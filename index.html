@@ -100,7 +100,7 @@
   }
 
   #jumpscareOverlay img {
-    animation: shake 0.15s infinite, lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
@@ -115,9 +115,11 @@
   }
 
   @keyframes lunge {
-    0% { transform: scale(0.1); }
-    50% { transform: scale(0.1); }
-    100% { transform: scale(1.05); }
+    0% { transform: scale(0.1) translate(0,0) rotate(0deg); }
+    25% { transform: scale(0.1) translate(3px,-2px) rotate(1deg); }
+    50% { transform: scale(0.55) translate(-3px,2px) rotate(-1deg); }
+    75% { transform: scale(0.8) translate(2px,3px) rotate(1deg); }
+    100% { transform: scale(1.05) translate(0,0) rotate(0deg); }
   }
 </style>
 </head>
