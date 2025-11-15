@@ -100,19 +100,25 @@
   }
 
   #jumpscareOverlay img {
-    animation: shake 0.15s infinite;
-
+    animation: shake 0.15s infinite, lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
   }
-@keyframes shake {
-  0% { transform: translate(0,0) rotate(0deg); }
-  25% { transform: translate(3px,-2px) rotate(1deg); }
-  50% { transform: translate(-3px,2px) rotate(-1deg); }
-  75% { transform: translate(2px,3px) rotate(1deg); }
-  100% { transform: translate(0,0) rotate(0deg); }
-}
+
+  @keyframes shake {
+    0% { transform: translate(0,0) rotate(0deg); }
+    25% { transform: translate(3px,-2px) rotate(1deg); }
+    50% { transform: translate(-3px,2px) rotate(-1deg); }
+    75% { transform: translate(2px,3px) rotate(1deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+
+  @keyframes lunge {
+    0% { transform: scale(0.1); }
+    50% { transform: scale(0.1); }
+    100% { transform: scale(1.05); }
+  }
 </style>
 </head>
 <body>
@@ -204,6 +210,11 @@
       jumpscareImg.src = imagesFolder + jumpscareFilename;
       overlay.style.transition = 'none';
       overlay.style.opacity = '1';
+      
+      // Play jumpscare audio
+      const audio = new Audio(imagesFolder + 'jumpscare.mp3');
+      audio.play().catch(e => console.log('Audio playback failed:', e));
+      
       void overlay.offsetWidth;
       setTimeout(()=>{
         overlay.style.transition = 'opacity 3s ease-out';
