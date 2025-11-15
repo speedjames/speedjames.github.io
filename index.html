@@ -298,16 +298,25 @@
       img.src = imagesFolder + jumpscareFilename;
     });
     
-    // Wait for audio and image to be ready
+    // Helper to detect iOS (Safari) where audio won't canplay until a user gesture
+    function isIOS() {
+      return /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+    }
+
+    // Wait for audio (unless iOS), image preload, and manifest
+    const audioReadyPromise = new Promise(resolve => {
+      if (!jumpscareAudio || !jumpscareAudio.src) return resolve();
+      if (isIOS()) {
+        console.log('iOS detected: skipping audio canplay wait');
+        // iOS won't allow canplay without user gesture — resolve now and rely on unlock on user click
+        return resolve();
+      }
+      jumpscareAudio.addEventListener('canplay', () => { console.log('jumpscare audio canplay'); resolve(); }, { once: true });
+      jumpscareAudio.addEventListener('error', () => { console.log('jumpscare audio error'); resolve(); }, { once: true });
+    });
+
     await Promise.all([
-      new Promise(resolve => {
-        if (jumpscareAudio.src) {
-          jumpscareAudio.addEventListener('canplay', resolve, { once: true });
-          jumpscareAudio.addEventListener('error', resolve, { once: true });
-        } else {
-          resolve();
-        }
-      }),
+      audioReadyPromise,
       jumpscarePreload,
       loadManifest()
     ]);
@@ -324,32 +333,27 @@
   // by attempting a muted play on first user interaction.
   let jumpscareUnlocked = false;
 
-  newBtn.addEventListener('click', () => {
-    // Attempt to unlock the audio on first click (muted play)
-    if (!jumpscareUnlocked && jumpscareAudio) {
-      try {
-        jumpscareAudio.muted = true;
-        const p = jumpscareAudio.play();
-        if (p && p.then) {
-          p.then(() => {
-            jumpscareAudio.pause();
-            jumpscareAudio.muted = false;
-            jumpscareUnlocked = true;
-          }).catch(() => {
-            jumpscareAudio.muted = false;
-            jumpscareUnlocked = true;
-          });
-        } else {
-          jumpscareAudio.pause();
-          jumpscareAudio.muted = false;
-          jumpscareUnlocked = true;
-        }
-      } catch (e) {
-        jumpscareAudio.muted = false;
-        jumpscareUnlocked = true;
+  async function unlockAudio() {
+    if (jumpscareUnlocked) return;
+    if (!jumpscareAudio) { jumpscareUnlocked = true; return; }
+    try {
+      jumpscareAudio.muted = true;
+      const p = jumpscareAudio.play();
+      if (p && p.then) {
+        await p;
       }
+      jumpscareAudio.pause();
+    } catch (e) {
+      console.log('unlockAudio play error', e);
+    } finally {
+      jumpscareAudio.muted = false;
+      jumpscareUnlocked = true;
+      console.log('jumpscare audio unlocked');
     }
+  }
 
+  newBtn.addEventListener('click', async () => {
+    await unlockAudio();
     showRandom();
     triggerJumpscareOnce();
   });
