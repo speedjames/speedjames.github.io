@@ -182,6 +182,7 @@
   let lastIndex = -1;
   let jumpscareTriggered = false;
   let jumpscareAudio = null;
+  let isJumpscareLoading = false;
 
   function preload(src) {
     return new Promise((resolve, reject) => {
@@ -225,6 +226,11 @@
   function triggerJumpscareOnce() {
     if (jumpscareTriggered) return;
     jumpscareTriggered = true;
+    isJumpscareLoading = true;
+    newBtn.disabled = true;
+    newBtn.textContent = 'Loading…';
+    currentImage.style.pointerEvents = 'none';
+    
     setTimeout(() => {
       jumpscareImg.src = imagesFolder + jumpscareFilename;
       overlay.style.transition = 'none';
@@ -245,6 +251,10 @@
       setTimeout(()=>{
         overlay.style.transition = 'opacity 3s ease-out';
         overlay.style.opacity = '0';
+        isJumpscareLoading = false;
+        newBtn.disabled = false;
+        newBtn.textContent = 'New Image';
+        currentImage.style.pointerEvents = 'auto';
       }, 2000);
     }, 2000);
   }
@@ -271,8 +281,8 @@
     await showRandom();
   }
 
-  newBtn.addEventListener('click', () => { showRandom(); triggerJumpscareOnce(); });
-  currentImage.addEventListener('click', showRandom);
+  newBtn.addEventListener('click', () => { if (!isJumpscareLoading) { showRandom(); triggerJumpscareOnce(); } });
+  currentImage.addEventListener('click', () => { if (!isJumpscareLoading) showRandom(); });
 
   init();
 })();
