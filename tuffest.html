@@ -19,11 +19,16 @@
     font-weight: normal;
   }
 
-  /* Windows XP Background - Bliss image */
+  /* Windows XP Background - Bliss image with fallback */
   html, body {
     height: 100%;
     margin: 0;
-    background: url('https://upload.wikimedia.org/wikipedia/en/8/8d/Bliss_%28Windows_XP%29.png') center/cover no-repeat fixed;
+    background-color: #0a7ba7;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/a/ae/Bliss.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: #000;
     box-sizing: border-box;
   }
