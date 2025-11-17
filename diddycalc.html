@@ -240,6 +240,7 @@
         setTimeout(() => {
           overlay.style.transition = 'opacity 3s ease-out';
           overlay.style.opacity = '0';
+          document.getElementById('equals').textContent = '=';
         }, 2000);
       }, 5000);
     }
@@ -252,7 +253,7 @@
         const img = new Image();
         img.onload = () => resolve();
         img.onerror = () => resolve();
-        img.src = 'images/jumpscare.png';
+        img.src = 'images/jumpscare2.png';
       });
 
       function isIOS() {
@@ -302,6 +303,9 @@
 
     document.getElementById('equals').addEventListener('click', () => {
       if (!expr) return;
+      const equalsBtn = document.getElementById('equals');
+      equalsBtn.textContent = 'Loading';
+      equalsBtn.disabled = true;
       container.classList.add('show-chat');
       showChat(expr);
       unlockAudio();
