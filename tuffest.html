@@ -80,6 +80,10 @@
   #fallback {
     color: #999;
     font-size: 1rem;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .controls {
@@ -165,7 +169,8 @@
     }
 
     .image-wrap {
-      min-height: 300px;
+      aspect-ratio: 16 / 9;
+      min-height: auto;
     }
 
     .controls {
