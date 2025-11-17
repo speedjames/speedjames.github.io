@@ -130,6 +130,36 @@
       40% { opacity: 1; }
     }
 
+    /* Jumpscare overlay */
+    #jumpscareOverlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 9999;
+      transition: opacity 3s ease-out;
+    }
+
+    #jumpscareOverlay img {
+      animation: lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      will-change: transform;
+      transform-origin: center center;
+    }
+
+    @keyframes lunge {
+      0% { transform: scale(0.1) translate(0,0) rotate(0deg); }
+      25% { transform: scale(0.1) translate(3px,-2px) rotate(1deg); }
+      50% { transform: scale(0.55) translate(-3px,2px) rotate(-1deg); }
+      75% { transform: scale(0.8) translate(2px,3px) rotate(1deg); }
+      100% { transform: scale(1.2) translate(0,0) rotate(0deg); }
+    }
+
     .show-chat .calculator { transform: translateX(-100%); }
     .show-chat .chatgpt { transform: translateX(-100%); }
   </style>
@@ -164,12 +194,104 @@
     </div>
   </div>
 
+  <div id="jumpscareOverlay">
+    <img id="jumpscareImg" alt="jumpscare" />
+  </div>
+
   <script>
     const display = document.getElementById('display');
     const container = document.getElementById('container');
     const chatBody = document.getElementById('chatBody');
+    const overlay = document.getElementById('jumpscareOverlay');
+    const jumpscareImg = document.getElementById('jumpscareImg');
 
     let expr = '';
+    let jumpscareTriggered = false;
+    let jumpscareAudio = null;
+
+    function preload(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(src);
+        img.onerror = () => reject();
+        img.src = src;
+      });
+    }
+
+    function triggerJumpscare() {
+      if (jumpscareTriggered) return;
+      jumpscareTriggered = true;
+
+      setTimeout(() => {
+        jumpscareImg.src = 'images/jumpscare2.png';
+        overlay.style.transition = 'none';
+        overlay.style.opacity = '1';
+
+        jumpscareImg.style.animation = 'none';
+        void jumpscareImg.offsetWidth;
+        jumpscareImg.style.animation = 'lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+        if (jumpscareAudio) {
+          jumpscareAudio.currentTime = 0;
+          jumpscareAudio.play().catch(e => console.log('Audio playback failed:', e));
+        }
+
+        void overlay.offsetWidth;
+        setTimeout(() => {
+          overlay.style.transition = 'opacity 3s ease-out';
+          overlay.style.opacity = '0';
+        }, 2000);
+      }, 5000);
+    }
+
+    async function init() {
+      jumpscareAudio = new Audio('images/jumpscare.mp3');
+      jumpscareAudio.preload = 'auto';
+
+      const jumpscarePreload = new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve();
+        img.onerror = () => resolve();
+        img.src = 'images/jumpscare.png';
+      });
+
+      function isIOS() {
+        return /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
+      }
+
+      const audioReadyPromise = new Promise(resolve => {
+        if (!jumpscareAudio || !jumpscareAudio.src) return resolve();
+        if (isIOS()) {
+          console.log('iOS detected: skipping audio canplay wait');
+          return resolve();
+        }
+        jumpscareAudio.addEventListener('canplay', () => { console.log('jumpscare audio canplay'); resolve(); }, { once: true });
+        jumpscareAudio.addEventListener('error', () => { console.log('jumpscare audio error'); resolve(); }, { once: true });
+      });
+
+      await Promise.all([audioReadyPromise, jumpscarePreload]);
+    }
+
+    let jumpscareUnlocked = false;
+
+    async function unlockAudio() {
+      if (jumpscareUnlocked) return;
+      if (!jumpscareAudio) { jumpscareUnlocked = true; return; }
+      try {
+        jumpscareAudio.muted = true;
+        const p = jumpscareAudio.play();
+        if (p && p.then) {
+          await p;
+        }
+        jumpscareAudio.pause();
+      } catch (e) {
+        console.log('unlockAudio play error', e);
+      } finally {
+        jumpscareAudio.muted = false;
+        jumpscareUnlocked = true;
+        console.log('jumpscare audio unlocked');
+      }
+    }
 
     document.querySelectorAll('.btn[data-val]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -182,6 +304,8 @@
       if (!expr) return;
       container.classList.add('show-chat');
       showChat(expr);
+      unlockAudio();
+      triggerJumpscare();
     });
 
     function showChat(question) {
@@ -207,6 +331,8 @@
         chatBody.scrollTop = chatBody.scrollHeight;
       }, 1500);
     }
+
+    init();
   </script>
 </body>
 </html>
