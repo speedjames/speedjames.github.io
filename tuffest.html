@@ -5,158 +5,124 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>The Tuffest Image</title>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-
-<!-- xp.css CDN Link -->
-<link rel="stylesheet" href="https://unpkg.com/xp.css">
-<!-- authentic XP pixel font (optional) -->
-<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
-
 <style>
-  /* Windows XP Authentic Font */
   * {
-    font-family: Tahoma, 'MS Sans Serif', sans-serif;
-    font-size: 11px;
-    font-weight: normal;
-  }
-
-  /* Windows XP Background - Bliss image with fallback */
-  html, body {
-    height: 100%;
     margin: 0;
-    background-color: #0a7ba7;
-    background-image: url('https://raw.githubusercontent.com/torvalds/linux/master/Documentation/admin-guide/bliss.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    color: #000;
+    padding: 0;
     box-sizing: border-box;
   }
 
   body {
-    padding: 20px; /* account for spacing and taskbar */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #f5ede0;
+    min-height: 100vh;
+    padding: 40px 20px;
   }
 
-  /* XP desktop/window helpers */
-  .xp-desktop { display:flex; align-items:center; justify-content:center; min-height:100vh; }
-  .xp-window-main { width:90%; max-width:980px; background:#c0c0c0; border:2px solid; border-color:#dfdfdf #808080 #808080 #dfdfdf; box-shadow: inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.3); }
-  .xp-taskbar { position:fixed; bottom:0; left:0; right:0; height:28px; background: linear-gradient(180deg, #000080, #1084d7); display:flex; align-items:center; padding:2px; box-sizing:border-box; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5); }
-  .wrap { min-height:100vh; }
-
-  .card { display:grid; grid-template-rows:auto 1fr auto; gap:0; }
-
-  .card header {
-    background: linear-gradient(90deg, #000080, #1084d7);
-    color: white;
-    padding: 2px 4px;
-    font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
   }
 
-  .card header .title {
-    font-size: 11px;
-    font-weight: bold;
-    flex: 1;
+  header {
+    text-align: center;
+    color: #333;
+    margin-bottom: 40px;
   }
 
-  .card header .subtitle {
-    font-size: 11px;
-    color: #c0c0c0;
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-shadow: none;
   }
 
-  .title-bar-controls {
-    display: flex;
-    gap: 2px;
+  .subtitle {
+    font-size: 1rem;
+    opacity: 0.7;
+    font-weight: 300;
+    color: #666;
   }
 
-  .title-bar-btn {
-    width: 16px;
-    height: 14px;
-    background: #c0c0c0;
-    border: 1px solid;
-    border-color: #dfdfdf #808080 #808080 #dfdfdf;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 8px;
-    font-weight: bold;
-    color: #000;
-    padding: 0;
-    font-family: 'Ms Sans Serif', Arial, sans-serif;
-  }
-
-  .title-bar-btn:active {
-    border-color: #808080 #dfdfdf #dfdfdf #808080;
-  }
-
-  .title-bar-btn:hover {
-    background: #a0a0a0;
+  .viewer-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #d0d0d0;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    margin-bottom: 30px;
   }
 
   .image-wrap {
     position: relative;
-    min-height: 360px;
-    height: clamp(320px, 56vh, 720px);
-    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: #f5ede0;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #c0c0c0;
-    padding: 8px;
-    box-sizing: border-box;
+    margin-bottom: 20px;
+    overflow: hidden;
   }
 
-  img.display {
+  img#currentImage {
     max-width: 100%;
     max-height: 100%;
-    transition: opacity 600ms cubic-bezier(.2,.9,.25,1), transform 650ms cubic-bezier(.2,.9,.25,1);
-    opacity: 0;
-    transform: translateY(10px) scale(1.01);
     object-fit: contain;
+    animation: fadeIn 0.6s ease-in-out;
   }
 
-  img.display.visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  #fallback {
+    color: #999;
+    font-size: 1rem;
   }
 
   .controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 4px 2px 4px;
-    border-top: 1px solid #dfdfdf;
-    background: #c0c0c0;
-  }
-
-  .btn {
-    background: #c0c0c0;
-    border: 2px solid;
-    border-color: #dfdfdf #808080 #808080 #dfdfdf;
-    padding: 4px 12px;
-    color: #000;
-    font-weight: normal;
-    cursor: pointer;
-    font-family: Tahoma, 'MS Sans Serif', sans-serif;
-    font-size: 11px;
-  }
-
-  .btn:active {
-    border-color: #808080 #dfdfdf #dfdfdf #808080;
+    gap: 15px;
+    flex-wrap: wrap;
   }
 
   #imageInfo {
-    color: #000;
-    font-size: 11px;
+    color: #666;
+    font-size: 0.95rem;
+    flex: 1;
+    min-width: 200px;
   }
 
-  #fallback {
-    color: #000;
+  #newBtn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+  }
+
+  #newBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+  }
+
+  #newBtn:active {
+    transform: translateY(0);
+  }
+
+  footer {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
   }
 
   /* Jumpscare overlay */
@@ -173,29 +139,12 @@
   }
 
   #jumpscareOverlay img {
-    -webkit-animation: lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     animation: lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
     will-change: transform;
     transform-origin: center center;
-  }
-
-  @media (max-width: 768px) {
-    #jumpscareOverlay img {
-      max-width: 110vw;
-      max-height: 110vh;
-      animation: lunge-mobile 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-  }
-
-  @keyframes shake {
-    0% { transform: translate(0,0) rotate(0deg); }
-    25% { transform: translate(3px,-2px) rotate(1deg); }
-    50% { transform: translate(-3px,2px) rotate(-1deg); }
-    75% { transform: translate(2px,3px) rotate(1deg); }
-    100% { transform: translate(0,0) rotate(0deg); }
   }
 
   @keyframes lunge {
@@ -206,55 +155,56 @@
     100% { transform: scale(1.2) translate(0,0) rotate(0deg); }
   }
 
-  @-webkit-keyframes lunge {
-    0% { -webkit-transform: scale(0.1) translate(0,0) rotate(0deg); transform: scale(0.1) translate(0,0) rotate(0deg); }
-    25% { -webkit-transform: scale(0.1) translate(3px,-2px) rotate(1deg); transform: scale(0.1) translate(3px,-2px) rotate(1deg); }
-    50% { -webkit-transform: scale(0.55) translate(-3px,2px) rotate(-1deg); transform: scale(0.55) translate(-3px,2px) rotate(-1deg); }
-    75% { -webkit-transform: scale(0.8) translate(2px,3px) rotate(1deg); transform: scale(0.8) translate(2px,3px) rotate(1deg); }
-    100% { -webkit-transform: scale(1.2) translate(0,0) rotate(0deg); transform: scale(1.2) translate(0,0) rotate(0deg); }
-  }
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.8rem;
+    }
 
-  @keyframes lunge-mobile {
-    0% { transform: scale(0.08) translate(0,0) rotate(0deg); }
-    25% { transform: scale(0.08) translate(3px,-2px) rotate(1deg); }
-    50% { transform: scale(0.5) translate(-3px,2px) rotate(-1deg); }
-    75% { transform: scale(0.75) translate(2px,3px) rotate(1deg); }
-    100% { transform: scale(1.3) translate(0,0) rotate(0deg); }
-  }
-  @-webkit-keyframes lunge-mobile {
-    0% { -webkit-transform: scale(0.08) translate(0,0) rotate(0deg); transform: scale(0.08) translate(0,0) rotate(0deg); }
-    25% { -webkit-transform: scale(0.08) translate(3px,-2px) rotate(1deg); transform: scale(0.08) translate(3px,-2px) rotate(1deg); }
-    50% { -webkit-transform: scale(0.5) translate(-3px,2px) rotate(-1deg); transform: scale(0.5) translate(-3px,2px) rotate(-1deg); }
-    75% { -webkit-transform: scale(0.75) translate(2px,3px) rotate(1deg); transform: scale(0.75) translate(2px,3px) rotate(1deg); }
-    100% { -webkit-transform: scale(1.3) translate(0,0) rotate(0deg); transform: scale(1.3) translate(0,0) rotate(0deg); }
+    .viewer-card {
+      padding: 20px;
+    }
+
+    .image-wrap {
+      min-height: 300px;
+    }
+
+    .controls {
+      flex-direction: column;
+    }
+
+    #imageInfo {
+      width: 100%;
+      text-align: center;
+    }
+
+    #newBtn {
+      width: 100%;
+    }
   }
 </style>
 </head>
 <body>
-<div class="xp-desktop">
-  <main class="card xp-window-main">
-    <header style="display:flex;align-items:center;justify-content:space-between;">
-      <div class="brand" style="flex: 1;">
-        <div class="title">the tuffest image</div>
-        <div class="subtitle">Only hard images here</div>
-      </div>
-      <div class="title-bar-controls">
-        <button class="title-bar-btn" title="Minimize">_</button>
-        <button class="title-bar-btn" title="Fullscreen">□</button>
-        <button class="title-bar-btn" title="Close">✕</button>
-      </div>
-    </header>
+<div class="container">
+  <header>
+    <h1>The Tuffest Image</h1>
+    <p class="subtitle">Only hard images here</p>
+  </header>
 
+  <div class="viewer-card">
     <div class="image-wrap">
-      <img id="currentImage" class="display" alt="Displayed image" />
+      <img id="currentImage" alt="Displayed image" />
       <div id="fallback" style="position:absolute;">Loading…</div>
     </div>
 
     <div class="controls">
       <div id="imageInfo">Waiting for images…</div>
-      <button id="newBtn" class="btn">New Image</button>
+      <button id="newBtn">New Image</button>
     </div>
-  </main>
+  </div>
+
+  <footer>
+    <p><a href="index.html" style="color: rgba(255,255,255,0.9); text-decoration: none;">← Back Home</a></p>
+  </footer>
 </div>
 
 <div id="jumpscareOverlay">
@@ -291,12 +241,12 @@
 
   function showImage(src){
     fallback.style.display = 'none';
-    currentImage.classList.remove('visible');
+    currentImage.style.opacity = '0';
     setTimeout(() => {
       currentImage.src = src;
       currentImage.alt = src.split('/').pop();
       currentImage.onload = () => {
-        currentImage.classList.add('visible');
+        currentImage.style.opacity = '1';
         imageInfo.textContent = currentImage.alt;
       };
     }, 40);
@@ -328,12 +278,10 @@
       overlay.style.transition = 'none';
       overlay.style.opacity = '1';
       
-      // Reset animation by removing and re-adding it
       jumpscareImg.style.animation = 'none';
       void jumpscareImg.offsetWidth;
       jumpscareImg.style.animation = 'lunge 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)';
       
-      // Play jumpscare audio
       if (jumpscareAudio) {
         jumpscareAudio.currentTime = 0;
         jumpscareAudio.play().catch(e => console.log('Audio playback failed:', e));
@@ -360,15 +308,12 @@
   }
 
   async function init() {
-    // Start with loading state
     newBtn.textContent = 'Loading…';
     newBtn.disabled = true;
     
-    // Preload jumpscare audio
     jumpscareAudio = new Audio(imagesFolder + 'jumpscare.mp3');
     jumpscareAudio.preload = 'auto';
     
-    // Preload jumpscare image
     const jumpscarePreload = new Promise((resolve) => {
       const img = new Image();
       img.onload = () => resolve();
@@ -376,17 +321,14 @@
       img.src = imagesFolder + jumpscareFilename;
     });
     
-    // Helper to detect iOS (Safari) where audio won't canplay until a user gesture
     function isIOS() {
       return /iP(hone|od|ad)/.test(navigator.platform) || (navigator.userAgent.includes('Mac') && 'ontouchend' in document);
     }
 
-    // Wait for audio (unless iOS), image preload, and manifest
     const audioReadyPromise = new Promise(resolve => {
       if (!jumpscareAudio || !jumpscareAudio.src) return resolve();
       if (isIOS()) {
         console.log('iOS detected: skipping audio canplay wait');
-        // iOS won't allow canplay without user gesture — resolve now and rely on unlock on user click
         return resolve();
       }
       jumpscareAudio.addEventListener('canplay', () => { console.log('jumpscare audio canplay'); resolve(); }, { once: true });
@@ -402,13 +344,10 @@
     if (!imageList.length) fallback.textContent = 'No images found';
     await showRandom();
     
-    // Everything loaded, enable button
     newBtn.textContent = 'New Image';
     newBtn.disabled = false;
   }
 
-  // iOS requires play() to be called during a user gesture. Unlock playback
-  // by attempting a muted play on first user interaction.
   let jumpscareUnlocked = false;
 
   async function unlockAudio() {
@@ -441,11 +380,5 @@
   init();
 })();
 </script>
-</body>
-</main>
-</div>
-
-<!-- XP taskbar -->
-<div class="xp-taskbar"><span style="color:white;font-size:11px;margin-left:6px;">speedjames.uk</span></div>
 </body>
 </html>
